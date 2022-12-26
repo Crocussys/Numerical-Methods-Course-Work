@@ -11,6 +11,25 @@ def formula_5p(x):
     return 4.7189 * 10 ** -7 * x ** 4 - 0.00021171 * x ** 3 + 0.029586 * x ** 2 - 2.04492 * x + 174
 
 
+def formula_np(xs, ys, x_all):
+    n = len(xs)
+    fs = [ys]
+    ans = []
+    for i in range(1, n):
+        fs.append([])
+        for j in range(1, i + 1):
+            fs[j].append((fs[j - 1][i - j + 1] - fs[j - 1][i - j]) / (xs[i] - xs[i - j]))
+    for x in x_all:
+        temp = 0
+        for i in range(n):
+            num = 1
+            for j in range(0, i):
+                num *= x - xs[j]
+            temp += fs[i][0] * num
+        ans.append(temp)
+    return ans
+
+
 def approximation(x, y, x_all):
     sx = [np.sum(list(map(lambda num: num ** i, x))) for i in range(1, 5)]
     sy = np.array([np.sum(list(map(lambda j, k: k * j ** i, x, y))) for i in range(3)])
@@ -71,24 +90,38 @@ def differentiation_3(x, y):
 
 
 def integration_left(x, y):
-    ans = []
+    s = 0
     for i in range(len(x) - 1):
-        ans.append(y[i] * (x[i + 1] - x[i]))
-    return ans
+        s += y[i] * (x[i + 1] - x[i])
+    return s
 
 
 def integration_right(x, y):
-    ans = []
+    s = 0
     for i in range(len(x) - 1):
-        ans.append(y[i + 1] * (x[i + 1] - x[i]))
-    return ans
+        s += y[i + 1] * (x[i + 1] - x[i])
+    return s
 
 
 def integration_middle(x, y):
-    ans = []
+    s = 0
     for i in range(len(x) - 1):
-        ans.append((y[i] + y[i + 1]) / 2 * (x[i + 1] - x[i]))
-    return ans
+        s += (y[i] + y[i + 1]) / 2 * (x[i + 1] - x[i])
+    return s
+
+
+def integration_trapezoid(x, y):
+    s = 0
+    for i in range(len(x) - 1):
+        s += (y[i] + y[i + 1]) * (x[i + 1] - x[i]) / 2
+    return s
+
+
+def integration_simpson(x, y):
+    s = 0
+    for i in range(len(x) - 2):
+        s += (y[i] + 4 * y[i + 1] + y[i + 2]) * (x[i + 1] - x[i]) / 6
+    return s
 
 
 def main():
@@ -101,50 +134,53 @@ def main():
     # y_interpolation_nodes = [174, 8, 174]
     # x_interpolation_nodes = [0, 204, 280, 136, 66]
     # y_interpolation_nodes = [174, 8, 174, 72, 116]
+    # x_interpolation_nodes = [x_pit_values[int(i)] for i in np.linspace(0, len(y_values) - 1, 10)]
+    # y_interpolation_nodes = [y_values[int(i)] for i in np.linspace(0, len(y_values) - 1, 10)]
     #
     # y_values_2 = list(map(formula_3p, x_all_values))
     # y_values_3 = list(map(formula_5p, x_all_values))
-    # y_values_4 = approximation(x_interpolation_nodes, y_interpolation_nodes, x_all_values)
-    # x_nodes = [x_pit_values[i] for i in range(len(x_pit_values)) if i % (len(x_pit_values) // 28) == 0]
-    # y_nodes = [y_values[i] for i in range(len(x_pit_values)) if i % (len(x_pit_values) // 28) == 0]
+    # y_values_3 = formula_np(x_interpolation_nodes, y_interpolation_nodes, x_all_values)
+    # y_values_4 = approximation(x_pit_values, y_values, x_all_values)
+    # x_nodes = [x_pit_values[int(i)] for i in np.linspace(0, len(y_values) - 1, 15)]
+    # y_nodes = [y_values[int(i)] for i in np.linspace(0, len(y_values) - 1, 15)]
     # y_values_5 = spline(x_nodes, y_nodes, x_all_values)
     # y_values_6 = differentiation_1(x_pit_values, y_values)
     # y_values_7 = differentiation_2(x_pit_values, y_values)
     # y_values_8 = differentiation_3(x_pit_values, y_values)
     # y_values_9 = differentiation_3(x_pit_values[1:-1], y_values_8)
-    y_values_10 = integration_left(x_pit_values, y_values)
-    y_values_11 = integration_right(x_pit_values, y_values)
-    y_values_12 = integration_right(x_pit_values, y_values)
+    # print(integration_left(x_pit_values, y_values))
+    # print(integration_right(x_pit_values, y_values))
+    # print(integration_middle(x_pit_values, y_values))
+    # print(integration_trapezoid(x_pit_values, y_values))
+    # print(integration_simpson(x_pit_values, y_values))
 
     fig, ax = plt.subplots()
     # ax.scatter(x_interpolation_nodes, y_interpolation_nodes, label="Узлы интерполяции", color='red')
-    # ax.scatter(x_nodes, y_nodes, label="Узлы аппроксимации", color='red')
+    # ax.scatter(x_interpolation_nodes, y_interpolation_nodes, label="Узлы аппроксимации", color='red')
+    # ax.scatter(x_nodes, y_nodes, label="Узлы интерполяции", color='red')
     # ax.scatter(x_pit_values, y_values, label="Ручная оцифровка", s=10, color="purple")
     # ax.plot(x_all_values, y_values_2, label="Интерполяция")
     # ax.plot(x_all_values, y_values_3, label="Интерполяция")
     # ax.plot(x_all_values, y_values_4, label="Аппроксимация")
     # ax.plot(x_all_values, y_values_5, label="Сплайн")
-    # ax.plot(x_pit_values[:-1], y_values_6, label="Дифференцирование 1")
-    # ax.plot(x_pit_values[1:], y_values_7, label="Дифференцирование 2")
-    # ax.plot(x_pit_values[1:-1], y_values_8, label="Дифференцирование 3")
-    # ax.plot(x_pit_values[2:-2], y_values_9, label="Дифференцирование x2")
-    ax.plot(x_pit_values[:-1], y_values_10, label="Интегрирование левыми")
-    ax.plot(x_pit_values[:-1], y_values_11, label="Интегрирование правыми")
-    ax.plot(x_pit_values[:-1], y_values_12, label="Интегрирование средними")
+    # ax.plot(x_pit_values[:-1], y_values_6, label="Дифференцирование правосторонней разностью")
+    # ax.plot(x_pit_values[1:], y_values_7, label="Дифференцирование левосторонней разностью")
+    # ax.plot(x_pit_values[1:-1], y_values_8, label="Дифференцирование двусторонней разностью")
+    # ax.plot(x_pit_values[2:-2], y_values_9, label="Вторая производная")
 
     ax.xaxis.set_major_locator(ticker.MultipleLocator(10))
     ax.xaxis.set_minor_locator(ticker.MultipleLocator(5))
-    ax.yaxis.set_major_locator(ticker.MultipleLocator(10))
-    ax.yaxis.set_minor_locator(ticker.MultipleLocator(5))
+    ax.yaxis.set_major_locator(ticker.MultipleLocator(0.5))
+    ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.1))
     ax.grid(which='major', color='gray')
     ax.grid(which='minor', color='gray', linestyle=':')
-    ax.legend()
+    # ax.legend()
     plt.xlim([0, 280])
-    # plt.ylim([0, 180])
-    # plt.title("Отцифрованная ямка", fontsize=14)
-    plt.xlabel("X мм", fontsize=14)
-    plt.ylabel("Y мм", fontsize=14)
-    plt.show()
+    plt.ylim([0, 180])
+    plt.xlabel("X", fontsize=14)
+    plt.ylabel("Y", fontsize=14)
+    # plt.show()
+    # fig.savefig('figure8.svg')
 
 
 if __name__ == "__main__":
