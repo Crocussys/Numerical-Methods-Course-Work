@@ -128,7 +128,7 @@ def main():
     pit = open("pit.txt")
     y_values = list(map(int, pit.read().split(" ")))
     x_pit_values = [2 * i for i in range(len(y_values))]
-    x_all_values = [i / 10 for i in range(2801)]
+    # x_all_values = [i / 10 for i in range(2801)]
 
     # x_interpolation_nodes = [0, 204, 280]
     # y_interpolation_nodes = [174, 8, 174]
@@ -144,15 +144,25 @@ def main():
     # x_nodes = [x_pit_values[int(i)] for i in np.linspace(0, len(y_values) - 1, 15)]
     # y_nodes = [y_values[int(i)] for i in np.linspace(0, len(y_values) - 1, 15)]
     # y_values_5 = spline(x_nodes, y_nodes, x_all_values)
-    # y_values_6 = differentiation_1(x_pit_values, y_values)
-    # y_values_7 = differentiation_2(x_pit_values, y_values)
-    # y_values_8 = differentiation_3(x_pit_values, y_values)
-    # y_values_9 = differentiation_3(x_pit_values[1:-1], y_values_8)
-    # print(integration_left(x_pit_values, y_values))
-    # print(integration_right(x_pit_values, y_values))
-    # print(integration_middle(x_pit_values, y_values))
-    # print(integration_trapezoid(x_pit_values, y_values))
-    # print(integration_simpson(x_pit_values, y_values))
+    y_values_6 = differentiation_1(x_pit_values, y_values)
+    y_values_7 = differentiation_2(x_pit_values, y_values)
+    y_values_8 = differentiation_3(x_pit_values, y_values)
+    y_values_9 = differentiation_3(x_pit_values[1:-1], y_values_8)
+    # n = len(x_pit_values) - 1
+    # d1 = differentiation_3(x_pit_values, y_values)
+    # d2 = differentiation_3(x_pit_values[1:-1], d1)
+    # d3 = differentiation_3(x_pit_values[2:-2], d2)
+    # d4 = differentiation_3(x_pit_values[3:-3], d3)
+    # h = x_pit_values[n] - x_pit_values[0]
+    # error = np.max(list(map(abs, d1))) * h ** 2 / (2 * n)
+    # print(f"Левые {integration_left(x_pit_values, y_values)} Погрешность {error}")
+    # print(f"Правые {integration_right(x_pit_values, y_values)} Погрешность {error}")
+    # error = np.max(list(map(abs, d2))) * h ** 3 / (24 * n ** 2)
+    # print(f"Средние {integration_middle(x_pit_values, y_values)} Погрешность {error}")
+    # error = np.max(list(map(abs, d2))) * h ** 3 / (12 * n ** 2)
+    # print(f"Трапеций {integration_trapezoid(x_pit_values, y_values)} Погрешность {error}")
+    # error = np.max(list(map(abs, d4))) * h ** 5 / (2880 * n ** 4)
+    # print(f"Симпсон {integration_simpson(x_pit_values, y_values)} Погрешность {error}")
 
     fig, ax = plt.subplots()
     # ax.scatter(x_interpolation_nodes, y_interpolation_nodes, label="Узлы интерполяции", color='red')
@@ -163,24 +173,24 @@ def main():
     # ax.plot(x_all_values, y_values_3, label="Интерполяция")
     # ax.plot(x_all_values, y_values_4, label="Аппроксимация")
     # ax.plot(x_all_values, y_values_5, label="Сплайн")
-    # ax.plot(x_pit_values[:-1], y_values_6, label="Дифференцирование правосторонней разностью")
-    # ax.plot(x_pit_values[1:], y_values_7, label="Дифференцирование левосторонней разностью")
-    # ax.plot(x_pit_values[1:-1], y_values_8, label="Дифференцирование двусторонней разностью")
-    # ax.plot(x_pit_values[2:-2], y_values_9, label="Вторая производная")
+    ax.plot(x_pit_values[:-1], y_values_6, label="Дифференцирование правосторонней разностью")
+    ax.plot(x_pit_values[1:], y_values_7, label="Дифференцирование левосторонней разностью")
+    ax.plot(x_pit_values[1:-1], y_values_8, label="Дифференцирование двусторонней разностью")
+    ax.plot(x_pit_values[2:-2], y_values_9, label="Вторая производная")
 
     ax.xaxis.set_major_locator(ticker.MultipleLocator(10))
     ax.xaxis.set_minor_locator(ticker.MultipleLocator(5))
-    ax.yaxis.set_major_locator(ticker.MultipleLocator(0.5))
-    ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.1))
+    ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
+    ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.5))
     ax.grid(which='major', color='gray')
     ax.grid(which='minor', color='gray', linestyle=':')
-    # ax.legend()
+    ax.legend()
     plt.xlim([0, 280])
-    plt.ylim([0, 180])
+    # plt.ylim([0, 180])
     plt.xlabel("X", fontsize=14)
     plt.ylabel("Y", fontsize=14)
-    # plt.show()
-    # fig.savefig('figure8.svg')
+    plt.show()
+    fig.savefig('figure8.svg')
 
 
 if __name__ == "__main__":
